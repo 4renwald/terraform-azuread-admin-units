@@ -20,3 +20,23 @@ provider "registry.terraform.io/hashicorp/azuread" {
     "zh:e94e114b205de36d60bc17a3758f9c4bfc6b01e63be81ae1d9699f9bf9650362",
   ]
 }
+
+provider "registry.terraform.io/microsoft/msgraph" {
+  version     = "0.2.0"
+  constraints = "~> 0.2.0"
+  hashes = [
+    "h1:a5Du92htJRQ7jM/6ypfCvwv5KjO6WJMJ0UDi2FdWtzU=",
+    "zh:058bf599c19fd3a0aec885a02417772e20791c97c1cfd2e470c9800065dcb083",
+    "zh:14cc43ed5bfc9c9b1245f52d287e955caa0526e351935a215a2961509a107f26",
+    "zh:2c5a396a975fd99a8d6e40bf767497b5c5671899ff91ea3f343f2ae9a5f1aaa0",
+    "zh:5e7142ead026a7853846a108bcfd59cc830542a9a670c3aa197e736b6295f1ce",
+    "zh:7920c44a2707b044f4f35f023146ae452b4ddd60ec14b8e4f220630f54ee2b22",
+    "zh:86a22ab687e9fafee43b1a4f96459b7c26a508dc0171b02f4fcf9c30b66f588b",
+    "zh:8bc4d2b55ea1669f2533900687e053e08785420f994b330dd6aa10427678d69c",
+    "zh:a8e4c11e391c54019b71dffc6eca42fb3aa4bc8905cb509fc2bb10983bfee618",
+    "zh:c209f7a49081bba3fc133c2d894ae90fe04f8a8a8eca706ed746a1f47b610269",
+    "zh:c6d87608e3f94706b86e941a0ee59ca813adccaff842bbe85d037fb3d5c429a2",
+    "zh:db35b7578a4a062c6979b39f1242d3d33a58128b7f10705bfb626e4cbceadf9c",
+    "zh:fd06cb7f9ae2b05d65fbe97d014f6f6fab103b836b30d37cc32e0fb8c26c7520",
+  ]
+}

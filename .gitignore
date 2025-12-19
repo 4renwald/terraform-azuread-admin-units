@@ -41,3 +41,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Ignore AI coding agent instructions (project-specific, not for version control)
+.github/copilot-instructions.md

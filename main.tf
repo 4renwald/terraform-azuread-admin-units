@@ -1,13 +1,7 @@
-terraform {
-  required_version = ">= 1.0.0"
-
-  required_providers {
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "~> 3.1.0"
-    }
-  }
-}
+# -----------------------------------------------------------------------------
+# Administrative Units
+# Provider: azuread
+# -----------------------------------------------------------------------------
 
 # Create Administrative Units from the provided list
 resource "azuread_administrative_unit" "this" {

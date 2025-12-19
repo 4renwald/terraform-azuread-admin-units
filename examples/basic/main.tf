@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/azuread"
       version = "~> 3.1.0"
     }
+    msgraph = {
+      source  = "microsoft/msgraph"
+      version = "~> 0.2.0"
+    }
   }
 }
 
@@ -15,6 +19,13 @@ provider "azuread" {
   # - ARM_CLIENT_ID
   # - ARM_CLIENT_SECRET (for service principal)
   # Or use Azure CLI authentication
+}
+
+provider "msgraph" {
+  # Uses same authentication as azuread provider
+  # Requires additional API permissions:
+  # - RoleEligibilitySchedule.ReadWrite.Directory
+  # - RoleManagement.ReadWrite.Directory
 }
 
 module "admin_units" {
