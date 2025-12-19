@@ -27,43 +27,86 @@ This module uses a **hybrid provider approach**:
 
 ### Quick Start
 
+**1. Create a manifest file** (`admin_units.tfvars`):
+
 ```hcl
+admin_units = [
+  {
+    display_name = "IT Department"
+    description  = "Administrative unit for IT department"
+
+    groups = [
+      {
+        display_name = "GRP_IT_Admins"
+        description  = "IT Administrators"
+      }
+    ]
+
+    members = {
+      user_principal_names = ["user1@contoso.com", "user2@contoso.com"]
+    }
+
+    role_assignments = [
+      {
+        role_display_name = "User Administrator"
+        assignment_type   = "eligible"  # PIM eligible
+        principal_names   = ["admin@contoso.com"]
+        schedule = {
+          type = "permanent"
+        }
+        justification = "IT Admin role for department management"
+      }
+    ]
+  }
+]
+```
+
+**2. Reference the module** (`main.tf`):
+
+```hcl
+variable "admin_units" {
+  type = list(object({
+    display_name              = string
+    description               = optional(string)
+    hidden_membership_enabled = optional(bool, false)
+    groups                    = optional(list(object({
+      display_name = string
+      description  = optional(string)
+    })), [])
+    members = optional(object({
+      user_principal_names = optional(list(string), [])
+      group_display_names  = optional(list(string), [])
+    }), {})
+    role_assignments = optional(list(object({
+      role_display_name = string
+      assignment_type   = string
+      principal_names   = list(string)
+      schedule = optional(object({
+        type       = optional(string, "permanent")
+        start_date = optional(string)
+        end_date   = optional(string)
+      }), { type = "permanent" })
+      justification = optional(string, "Managed by Terraform")
+    })), [])
+  }))
+}
+
 module "admin_units" {
   source = "github.com/4renwald/terraform-azuread-admin-units"
 
-  admin_units = [
-    {
-      display_name = "IT Department"
-      description  = "Administrative unit for IT department"
-
-      groups = [
-        {
-          display_name = "GRP_IT_Admins"
-          description  = "IT Administrators"
-        }
-      ]
-
-      members = {
-        user_principal_names = ["user1@contoso.com", "user2@contoso.com"]
-      }
-
-      role_assignments = [
-        {
-          role_display_name = "User Administrator"
-          assignment_type   = "eligible"  # PIM eligible
-          principal_names   = ["admin@contoso.com"]
-          schedule = {
-            type = "permanent"
-          }
-          justification = "IT Admin role for department management"
-        }
-      ]
-    }
-  ]
+  admin_units = var.admin_units
 }
 ```
 
+**3. Apply with the manifest**:
+
+```bash
+terraform apply -var-file="admin_units.tfvars"
+```
+
 ### Complete Example with All Features
+
+**Manifest file** (`manifest.tfvars`):
 
 ```hcl
 admin_units = [
