@@ -61,40 +61,41 @@ admin_units = [
 ]
 ```
 
-**2. Reference the module** (`main.tf`):
+**2. Create your Terraform configuration** (`main.tf`):
 
 ```hcl
-variable "admin_units" {
-  type = list(object({
-    display_name              = string
-    description               = optional(string)
-    hidden_membership_enabled = optional(bool, false)
-    groups                    = optional(list(object({
-      display_name = string
-      description  = optional(string)
-    })), [])
-    members = optional(object({
-      user_principal_names = optional(list(string), [])
-      group_display_names  = optional(list(string), [])
-    }), {})
-    role_assignments = optional(list(object({
-      role_display_name = string
-      assignment_type   = string
-      principal_names   = list(string)
-      schedule = optional(object({
-        type       = optional(string, "permanent")
-        start_date = optional(string)
-        end_date   = optional(string)
-      }), { type = "permanent" })
-      justification = optional(string, "Managed by Terraform")
-    })), [])
-  }))
+terraform {
+  required_version = ">= 1.0.0"
+
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "~> 3.1.0"
+    }
+    msgraph = {
+      source  = "microsoft/msgraph"
+      version = "~> 0.2.0"
+    }
+  }
 }
+
+provider "azuread" {}
+provider "msgraph" {}
 
 module "admin_units" {
   source = "github.com/4renwald/terraform-azuread-admin-units"
 
   admin_units = var.admin_units
+}
+```
+
+**variables.tf**:
+
+```hcl
+variable "admin_units" {
+  description = "List of Administrative Units to create"
+  type        = any
+  default     = []
 }
 ```
 
