@@ -7,7 +7,7 @@
 resource "azuread_administrative_unit_member" "users" {
   for_each = local.user_members_flat
 
-  administrative_unit_object_id = azuread_administrative_unit.this[each.value.au_display_name].object_id
+  administrative_unit_object_id = local.au_object_ids[each.value.au_display_name]
   member_object_id              = data.azuread_user.users[each.value.user_principal_name].object_id
 }
 
@@ -17,6 +17,6 @@ resource "azuread_administrative_unit_member" "users" {
 resource "azuread_administrative_unit_member" "groups" {
   for_each = local.group_members_flat
 
-  administrative_unit_object_id = azuread_administrative_unit.this[each.value.au_display_name].object_id
+  administrative_unit_object_id = local.au_object_ids[each.value.au_display_name]
   member_object_id              = azuread_group.au_groups["${each.value.au_display_name}/${each.value.group_display_name}"].object_id
 }

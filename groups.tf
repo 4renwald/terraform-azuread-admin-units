@@ -10,7 +10,7 @@ resource "azuread_group" "au_groups" {
   display_name            = each.value.group_display_name
   description             = each.value.description
   security_enabled        = true
-  administrative_unit_ids = [azuread_administrative_unit.this[each.value.au_display_name].object_id]
+  administrative_unit_ids = [local.au_object_ids[each.value.au_display_name]]
 
   lifecycle {
     # Prevent Terraform from trying to remove AU membership managed by this resource

@@ -265,13 +265,13 @@ run "create_restricted_admin_unit" {
   }
 
   assert {
-    condition     = length(azuread_administrative_unit.this) == 1
-    error_message = "Expected exactly 1 admin unit to be created"
+    condition     = length(azuread_administrative_unit.this) == 0
+    error_message = "Expected no standard admin units (restricted AUs use msgraph)"
   }
 
   assert {
-    condition     = length(terraform_data.restricted_au) == 1
-    error_message = "Expected exactly 1 restricted AU patch to be created"
+    condition     = length(msgraph_resource.restricted_au) == 1
+    error_message = "Expected exactly 1 restricted AU via msgraph"
   }
 }
 
@@ -296,13 +296,13 @@ run "create_mixed_restricted_admin_units" {
   }
 
   assert {
-    condition     = length(azuread_administrative_unit.this) == 3
-    error_message = "Expected exactly 3 admin units to be created"
+    condition     = length(azuread_administrative_unit.this) == 2
+    error_message = "Expected exactly 2 standard admin units"
   }
 
   assert {
-    condition     = length(terraform_data.restricted_au) == 1
-    error_message = "Expected exactly 1 restricted AU patch (only 'Restricted AU')"
+    condition     = length(msgraph_resource.restricted_au) == 1
+    error_message = "Expected exactly 1 restricted AU via msgraph"
   }
 }
 

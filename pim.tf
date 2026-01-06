@@ -10,7 +10,7 @@
 resource "azuread_administrative_unit_role_member" "active" {
   for_each = local.active_assignments
 
-  administrative_unit_object_id = azuread_administrative_unit.this[each.value.au_display_name].object_id
+  administrative_unit_object_id = local.au_object_ids[each.value.au_display_name]
   role_object_id                = azuread_directory_role.roles[each.value.role_display_name].object_id
   member_object_id              = data.azuread_user.users[each.value.principal_name].object_id
 }
@@ -31,7 +31,7 @@ resource "msgraph_resource" "pim_eligible" {
     justification    = each.value.justification
     roleDefinitionId = azuread_directory_role.roles[each.value.role_display_name].template_id
     principalId      = data.azuread_user.users[each.value.principal_name].object_id
-    directoryScopeId = "/administrativeUnits/${azuread_administrative_unit.this[each.value.au_display_name].object_id}"
+    directoryScopeId = "/administrativeUnits/${local.au_object_ids[each.value.au_display_name]}"
     scheduleInfo = {
       startDateTime = coalesce(each.value.start_date, formatdate("YYYY-MM-DD'T'hh:mm:ss'Z'", local.current_timestamp))
       expiration = each.value.schedule_type == "permanent" ? {

@@ -5,21 +5,33 @@
 # Administrative Units
 output "admin_units" {
   description = "Map of created Administrative Units with their attributes"
-  value = {
-    for key, au in azuread_administrative_unit.this : key => {
-      id                            = au.id
-      object_id                     = au.object_id
-      display_name                  = au.display_name
-      description                   = au.description
-      hidden_membership_enabled     = au.hidden_membership_enabled
-      restricted_management_enabled = contains(keys(terraform_data.restricted_au), key)
+  value = merge(
+    {
+      for key, au in azuread_administrative_unit.this : key => {
+        id                            = au.id
+        object_id                     = au.object_id
+        display_name                  = au.display_name
+        description                   = au.description
+        hidden_membership_enabled     = au.hidden_membership_enabled
+        restricted_management_enabled = false
+      }
+    },
+    {
+      for key, au in msgraph_resource.restricted_au : key => {
+        id                            = au.output.id
+        object_id                     = au.output.id
+        display_name                  = au.output.displayName
+        description                   = try(au.output.description, null)
+        hidden_membership_enabled     = try(local.restricted_aus[key].hidden_membership_enabled, false)
+        restricted_management_enabled = true
+      }
     }
-  }
+  )
 }
 
 output "admin_unit_ids" {
   description = "Map of Administrative Unit display names to their object IDs"
-  value       = { for key, au in azuread_administrative_unit.this : key => au.object_id }
+  value       = local.au_object_ids
 }
 
 # Groups
@@ -90,7 +102,8 @@ output "eligible_role_assignments" {
 output "summary" {
   description = "Summary of all created resources"
   value = {
-    admin_units_count               = length(azuread_administrative_unit.this)
+    admin_units_count               = length(azuread_administrative_unit.this) + length(msgraph_resource.restricted_au)
+    restricted_admin_units_count    = length(msgraph_resource.restricted_au)
     groups_count                    = length(azuread_group.au_groups)
     user_members_count              = length(azuread_administrative_unit_member.users)
     group_members_count             = length(azuread_administrative_unit_member.groups)
