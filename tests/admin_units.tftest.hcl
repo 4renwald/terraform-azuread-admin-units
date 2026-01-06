@@ -248,3 +248,61 @@ run "validation_temporary_schedule_end_date" {
   }
 }
 
+# -----------------------------------------------------------------------------
+# Test: Restricted Management Administrative Units
+# -----------------------------------------------------------------------------
+run "create_restricted_admin_unit" {
+  command = plan
+
+  variables {
+    admin_units = [
+      {
+        display_name                  = "Restricted AU"
+        description                   = "Protected admin unit"
+        restricted_management_enabled = true
+      }
+    ]
+  }
+
+  assert {
+    condition     = length(azuread_administrative_unit.this) == 1
+    error_message = "Expected exactly 1 admin unit to be created"
+  }
+
+  assert {
+    condition     = length(msgraph_resource.restricted_au) == 1
+    error_message = "Expected exactly 1 restricted AU patch to be created"
+  }
+}
+
+run "create_mixed_restricted_admin_units" {
+  command = plan
+
+  variables {
+    admin_units = [
+      {
+        display_name                  = "Restricted AU"
+        restricted_management_enabled = true
+      },
+      {
+        display_name                  = "Normal AU"
+        restricted_management_enabled = false
+      },
+      {
+        display_name = "Default AU"
+        # restricted_management_enabled defaults to false
+      }
+    ]
+  }
+
+  assert {
+    condition     = length(azuread_administrative_unit.this) == 3
+    error_message = "Expected exactly 3 admin units to be created"
+  }
+
+  assert {
+    condition     = length(msgraph_resource.restricted_au) == 1
+    error_message = "Expected exactly 1 restricted AU patch (only 'Restricted AU')"
+  }
+}
+

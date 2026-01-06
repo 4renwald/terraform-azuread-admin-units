@@ -1,9 +1,10 @@
 variable "admin_units" {
   description = "List of Administrative Units to create with groups, members, and role assignments"
   type = list(object({
-    display_name              = string
-    description               = optional(string)
-    hidden_membership_enabled = optional(bool, false)
+    display_name                  = string
+    description                   = optional(string)
+    hidden_membership_enabled     = optional(bool, false)
+    restricted_management_enabled = optional(bool, false) # Requires P2 license - protects members from tenant-level admins
 
     # Groups to create within this Administrative Unit
     groups = optional(list(object({

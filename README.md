@@ -8,6 +8,7 @@ Terraform module to manage Microsoft Entra ID (Azure AD) Administrative Units wi
 - 🔄 **Declarative** — Add, modify, or remove admin units by updating the manifest
 - 👥 **Groups & Members** — Create security groups and manage user/group membership within AUs
 - 🔐 **PIM Support** — Both eligible and active role assignments scoped to AUs
+- 🛡️ **Restricted AUs** — Protect members from tenant-level administrator actions
 - ⏱️ **Scheduling** — Permanent or time-bound role assignments with ISO 8601 dates
 - ✅ **Validation** — Built-in checks for unique names, valid assignment types, and schedule rules
 - 🏗️ **Hybrid Architecture** — Uses `azuread` + `msgraph` providers for complete functionality
@@ -112,9 +113,10 @@ terraform apply -var-file="admin_units.tfvars"
 ```hcl
 admin_units = [
   {
-    display_name              = "Engineering"
-    description               = "Engineering department administrative unit"
-    hidden_membership_enabled = false
+    display_name                  = "Engineering"
+    description                   = "Engineering department administrative unit"
+    hidden_membership_enabled     = false
+    restricted_management_enabled = true  # Protects members from tenant-level admins
 
     # Create security groups within this AU
     groups = [
@@ -173,7 +175,9 @@ admin_units = [
 
 ### Licensing
 
-⚠️ **PIM eligible assignments require Microsoft Entra ID P2 or Microsoft Entra ID Governance license.**
+⚠️ **The following features require Microsoft Entra ID P2 or Microsoft Entra ID Governance license:**
+- PIM eligible role assignments (`assignment_type = "eligible"`)
+- Restricted Administrative Units (`restricted_management_enabled = true`)
 
 ### API Permissions
 
@@ -200,6 +204,7 @@ The service principal or user running Terraform needs these permissions:
 | `display_name` | Display name of the Administrative Unit | `string` | — | yes |
 | `description` | Description of the Administrative Unit | `string` | `null` | no |
 | `hidden_membership_enabled` | Hide membership from non-admins | `bool` | `false` | no |
+| `restricted_management_enabled` | Protect members from tenant-level admins (requires P2) | `bool` | `false` | no |
 | `groups` | List of security groups to create | `list(object)` | `[]` | no |
 | `members` | Users and groups to add as members | `object` | `{}` | no |
 | `role_assignments` | Scoped role assignments | `list(object)` | `[]` | no |
