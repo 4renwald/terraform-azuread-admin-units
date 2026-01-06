@@ -270,7 +270,7 @@ run "create_restricted_admin_unit" {
   }
 
   assert {
-    condition     = length(msgraph_resource.restricted_au) == 1
+    condition     = length(terraform_data.restricted_au) == 1
     error_message = "Expected exactly 1 restricted AU patch to be created"
   }
 }
@@ -301,7 +301,7 @@ run "create_mixed_restricted_admin_units" {
   }
 
   assert {
-    condition     = length(msgraph_resource.restricted_au) == 1
+    condition     = length(terraform_data.restricted_au) == 1
     error_message = "Expected exactly 1 restricted AU patch (only 'Restricted AU')"
   }
 }

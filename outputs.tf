@@ -12,7 +12,7 @@ output "admin_units" {
       display_name                  = au.display_name
       description                   = au.description
       hidden_membership_enabled     = au.hidden_membership_enabled
-      restricted_management_enabled = contains(keys(msgraph_resource.restricted_au), key)
+      restricted_management_enabled = contains(keys(terraform_data.restricted_au), key)
     }
   }
 }

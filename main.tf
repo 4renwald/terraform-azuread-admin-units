@@ -14,7 +14,7 @@ resource "azuread_administrative_unit" "this" {
 
 # -----------------------------------------------------------------------------
 # Restricted Administrative Units
-# Provider: msgraph (azuread provider doesn't support isMemberManagementRestricted)
+# Provider: terraform_data + az CLI (azuread provider doesn't support isMemberManagementRestricted)
 # Requires: Microsoft Entra ID P2 or Microsoft Entra ID Governance license
 # -----------------------------------------------------------------------------
 locals {
@@ -25,20 +25,30 @@ locals {
 }
 
 # Patch AUs to enable restricted management via Microsoft Graph API
-# Note: Uses URL pointing directly to the AU to perform PATCH operations
-resource "msgraph_resource" "restricted_au" {
+resource "terraform_data" "restricted_au" {
   for_each = local.restricted_aus
 
-  url         = "directory/administrativeUnits/${azuread_administrative_unit.this[each.key].object_id}"
-  api_version = "v1.0"
-
-  body = {
-    isMemberManagementRestricted = true
+  triggers_replace = {
+    au_id      = azuread_administrative_unit.this[each.key].object_id
+    restricted = true
   }
 
-  response_export_values = {
-    id                           = "id"
-    displayName                  = "displayName"
-    isMemberManagementRestricted = "isMemberManagementRestricted"
+  provisioner "local-exec" {
+    command = <<-EOT
+      az rest --method PATCH \
+        --url "https://graph.microsoft.com/v1.0/directory/administrativeUnits/${azuread_administrative_unit.this[each.key].object_id}" \
+        --headers "Content-Type=application/json" \
+        --body '{"isMemberManagementRestricted": true}'
+    EOT
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+      az rest --method PATCH \
+        --url "https://graph.microsoft.com/v1.0/directory/administrativeUnits/${self.triggers_replace.au_id}" \
+        --headers "Content-Type=application/json" \
+        --body '{"isMemberManagementRestricted": false}' || true
+    EOT
   }
 }
